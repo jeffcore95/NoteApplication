@@ -1,0 +1,99 @@
+package com.example.noteapplication.auth;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.noteapplication.MainActivity;
+import com.example.noteapplication.R;
+import com.example.noteapplication.Splash;
+import com.example.noteapplication.databinding.ActivityLoginBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+public class Login extends AppCompatActivity {
+    ActivityLoginBinding binding;
+    FirebaseAuth fAuth;
+    FirebaseFirestore db;
+    FirebaseUser user;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        super.onCreate(savedInstanceState);
+        setContentView(binding.getRoot());
+
+        fAuth = FirebaseAuth.getInstance();
+        user = fAuth.getCurrentUser();
+
+        getSupportActionBar().setTitle("Login to Note Application");
+        showWarning();
+        binding.loginBtn.setOnClickListener(v -> {
+            String loginEmail = binding.loginEmail.getText().toString();
+            String loginPassword = binding.loginPassword.getText().toString();
+
+            if(loginEmail.isEmpty() || loginPassword.isEmpty()){
+                Toast.makeText(Login.this, "Field are Required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            binding.progressBarLogin.setVisibility(View.VISIBLE);
+
+            fAuth.signInWithEmailAndPassword(loginEmail,loginPassword).addOnSuccessListener(authResult -> {
+                Toast.makeText(Login.this, "Login Successful !", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+
+                if(fAuth.getCurrentUser().isAnonymous()){
+                    FirebaseUser user = fAuth.getCurrentUser();
+
+                    db.collection("notes").document(user.getUid()).delete().addOnSuccessListener(unused -> Toast.makeText(Login.this, "All Temp Notes Deleted.", Toast.LENGTH_SHORT).show());
+                    user.delete().addOnSuccessListener(unused -> Toast.makeText(Login.this, "Temp User Deleted.", Toast.LENGTH_SHORT).show());
+                }
+
+                finish();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(Login.this, "Login Failed. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                binding.progressBarLogin.setVisibility(View.GONE);
+            });
+        });
+    }
+
+    private void showWarning() {
+        AlertDialog.Builder warning = new AlertDialog.Builder(this)
+                .setTitle("Are You Sure?")
+                .setMessage("Linking the existed account will discard all the temp notes, create a new Account to save them.")
+                .setPositiveButton("Save Notes", (dialog, which) -> {
+                    startActivity(new Intent(getApplicationContext(), Register.class));
+                    finish();
+                }).setNegativeButton("I don't care", (dialog, which) -> {
+                    // ToDo: delete all the notes created by Anonymous user
+                    // ToDo: delete the Anonymous user
+
+
+                });
+
+        warning.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.close_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.close){
+            Toast.makeText(this, "Login Canceled.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
