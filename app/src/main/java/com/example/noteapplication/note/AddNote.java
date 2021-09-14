@@ -39,6 +39,7 @@ public class AddNote extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
 
+
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -88,13 +89,6 @@ public class AddNote extends AppCompatActivity {
             startActivity(new Intent(AddNote.this, MainActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(AddNote.this, MainActivity.class));
     }
 
     private int getRandomColor() {

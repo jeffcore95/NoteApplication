@@ -53,19 +53,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Forget Password"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginBtn"/>
-    
+        app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
+
     <TextView
         android:id="@+id/createAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Create New Account"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/forgetPassword"/>
+        app:layout_constraintTop_toBottomOf="@+id/forgetPassword" />
 
     <ProgressBar
         android:id="@+id/progressBarLogin"

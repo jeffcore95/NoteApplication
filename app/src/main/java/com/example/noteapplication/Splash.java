@@ -3,15 +3,14 @@ package com.example.noteapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.noteapplication.auth.Login;
 import com.example.noteapplication.databinding.ActivitySplashBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Splash extends AppCompatActivity {
@@ -23,33 +22,38 @@ public class Splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fAuth =FirebaseAuth.getInstance();
-                // check if the user is logged in
+        binding.loginBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Login.class);
+            intent.putExtra("firstTimeLogin","true");
+            startActivity(intent);
+            //startActivity(new Intent(getApplicationContext(), Login.class));
 
-                if(fAuth.getCurrentUser() != null){
-                    startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                    finish();
-                }else{
-                    // create new anonymous account
-                    fAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(AuthResult authResult) {
-                            Toast.makeText(Splash.this, "Logged in with Temporary Account", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                            finish();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(Splash.this, "Error with "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    });
-                }
+        });
+
+        binding.anonyLoginBtn.setOnClickListener(v -> {
+            // create new anonymous account
+            fAuth.signInAnonymously().addOnSuccessListener(authResult -> {
+                Toast.makeText(Splash.this, "Logged in with Temporary Account", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                finish();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(Splash.this, "Error with "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        });
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            fAuth =FirebaseAuth.getInstance();
+            // check if the user is logged in
+
+            if(fAuth.getCurrentUser() != null){
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                finish();
+            }else{
+                binding.loginBtn.setVisibility(View.VISIBLE);
+                binding.anonyLoginBtn.setVisibility(View.VISIBLE);
+                binding.progressBar2.setVisibility(View.GONE);
             }
         },2000);
     }

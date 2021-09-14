@@ -34,7 +34,11 @@ public class Register extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
 
-        binding.loginHere.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(),Login.class)));
+        binding.loginHere.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(),Login.class);
+            intent.putExtra("firstTimeLogin","true");
+            startActivity(intent);
+        });
 
         binding.btnSync.setOnClickListener(v -> {
             String userName = binding.registerName.getText().toString();
@@ -71,18 +75,5 @@ public class Register extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.close_menu,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.close){
-            Toast.makeText(this, "Cancel Sync Note", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 }

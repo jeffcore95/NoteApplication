@@ -66,9 +66,5 @@ public class NoteDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(NoteDetails.this, MainActivity.class));
-    }
+
 }

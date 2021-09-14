@@ -35,7 +35,11 @@ public class Login extends AppCompatActivity {
         user = fAuth.getCurrentUser();
 
         getSupportActionBar().setTitle("Login to Note Application");
-        showWarning();
+
+
+        if(getIntent().getStringExtra("firstTimeLogin").equals("false")){
+            showWarning();
+        }
         binding.loginBtn.setOnClickListener(v -> {
             String loginEmail = binding.loginEmail.getText().toString();
             String loginPassword = binding.loginPassword.getText().toString();
@@ -63,6 +67,12 @@ public class Login extends AppCompatActivity {
                 binding.progressBarLogin.setVisibility(View.GONE);
             });
         });
+        binding.createAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),Register.class));
+            }
+        });
     }
 
     private void showWarning() {
@@ -82,18 +92,4 @@ public class Login extends AppCompatActivity {
         warning.show();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.close_menu,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.close){
-            Toast.makeText(this, "Login Canceled.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

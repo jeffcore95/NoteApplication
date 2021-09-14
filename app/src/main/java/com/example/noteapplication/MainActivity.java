@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 noteBinding.noteBox.setOnClickListener(v -> {
                     int pos = noteViewHolder.getAdapterPosition();
-                    Toast.makeText(v.getContext(), ""+note.getColor(), Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(v.getContext(), NoteDetails.class);
                     intent.putExtra("title",note.getTitle());
@@ -121,21 +120,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         documentReference.delete().addOnSuccessListener(unused -> {
                             //note is successfully delete
                             Toast.makeText(MainActivity.this, "Note deleted.", Toast.LENGTH_SHORT).show();
-
-
-
                         }).addOnFailureListener(e -> {
                             //note is fail to delete
                             Toast.makeText(MainActivity.this, "Note is fail to delete", Toast.LENGTH_SHORT).show();
-
                         });
                         return false;
 
                     });
                     menu.show();
                 });
-
-
             }
 
             @NonNull
@@ -158,11 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.contentMain.noteList.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         binding.contentMain.noteList.setAdapter(noteAdapter);
         binding.contentMain.addNoteFloat.setOnClickListener(v -> startActivity(new Intent(v.getContext(), AddNote.class)));
-
-
-
-
-
     }
 
     @Override
@@ -176,7 +164,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.sync:
                 if (user.isAnonymous()){
-                    startActivity(new Intent(this, Login.class));
+                    Intent intent = new Intent(this,Login.class);
+                    intent.putExtra("firstTimeLogin","false");
+                    startActivity(intent);
                 }else{
                     Toast.makeText(MainActivity.this,"You are connected.", Toast.LENGTH_SHORT).show();
                 }
@@ -213,13 +203,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Sync Note", (dialog, which) -> {
                     startActivity(new Intent(getApplicationContext(), Register.class));
                     finish();
-                }).setNegativeButton("Logout", (dialog, which) -> {
-                    user.delete().addOnSuccessListener(unused -> {
-                        startActivity(new Intent(getApplicationContext(),Splash.class));
-                        Toast.makeText(getApplicationContext(), "Temporary Account Deleted.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
-                });
+                }).setNegativeButton("Logout", (dialog, which) -> user.delete().addOnSuccessListener(unused -> {
+                    startActivity(new Intent(getApplicationContext(),Splash.class));
+                    Toast.makeText(getApplicationContext(), "Temporary Account Deleted.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }));
 
         warning.show();
     }
@@ -247,7 +235,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -262,12 +249,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //startActivity(getIntent());
-    }
-
-
 }

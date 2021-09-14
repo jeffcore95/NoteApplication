@@ -37,6 +37,8 @@ public class EditNote extends AppCompatActivity {
         String editTitle = getIntent().getStringExtra("title");
         String editContent = getIntent().getStringExtra("content");
 
+        setSupportActionBar(binding.toolbar);
+
         binding.editNoteTitle.setText(editTitle);
         binding.editNoteContent.setText(editContent);
 
@@ -78,7 +80,7 @@ public class EditNote extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.close){
-            Toast.makeText(this, "Note Discard.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cancel Note Editing.", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(EditNote.this, MainActivity.class));
         }
         return super.onOptionsItemSelected(item);
