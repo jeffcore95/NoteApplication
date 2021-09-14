@@ -86,21 +86,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         noteAdapter = new FirestoreRecyclerAdapter<Note, NoteViewHolder>(allNotes) {
             @Override
             protected void onBindViewHolder(@NonNull NoteViewHolder noteViewHolder, int position, @NonNull final Note note) {
-                final int code = getRandomColor();
+
 
                 noteBinding.titles.setText(note.getTitle());
                 noteBinding.content.setText(note.getContent());
-                noteBinding.noteCard.setCardBackgroundColor(noteBinding.noteBox.getResources().getColor(code,null));
+                noteBinding.noteCard.setCardBackgroundColor(noteBinding.noteBox.getResources().getColor(note.getColor(),null));
 
 
                 String docId = noteAdapter.getSnapshots().getSnapshot(position).getId();
                 noteBinding.noteBox.setOnClickListener(v -> {
-                    Toast.makeText(v.getContext(), ""+docId, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), ""+note.getColor(), Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(v.getContext(), NoteDetails.class);
                     intent.putExtra("title",note.getTitle());
                     intent.putExtra("content",note.getContent());
-                    intent.putExtra("color",code);
+                    intent.putExtra("color",note.getColor());
                     intent.putExtra("noteId",docId);
                     v.getContext().startActivity(intent);
                 });
@@ -126,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             //note is successfully delete
                             Toast.makeText(MainActivity.this, "Note deleted.", Toast.LENGTH_SHORT).show();
 
+                            startActivity(getIntent());
+                            overridePendingTransition( 0, 0);
 
                         }).addOnFailureListener(e -> {
                             //note is fail to delete
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         });
                         return false;
+
                     });
                     menu.show();
 
@@ -217,9 +220,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startActivity(new Intent(getApplicationContext(), Register.class));
                     finish();
                 }).setNegativeButton("Logout", (dialog, which) -> {
-                    // ToDo: delete all the notes created by Anonymous user
-                    // ToDo: delete the Anonymous user
-
                     user.delete().addOnSuccessListener(unused -> {
                         startActivity(new Intent(getApplicationContext(),Splash.class));
                         Toast.makeText(getApplicationContext(), "Temporary Account Deleted.", Toast.LENGTH_SHORT).show();
@@ -253,23 +253,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private int getRandomColor() {
-        List<Integer> colorCode = new ArrayList<>();
-        colorCode.add(R.color.blue);
-        colorCode.add(R.color.yellow);
-        colorCode.add(R.color.skyBlue);
-        colorCode.add(R.color.lightPurple);
-        colorCode.add(R.color.lightGreen);
-        colorCode.add(R.color.gray);
-        colorCode.add(R.color.pink);
-        colorCode.add(R.color.red);
-        colorCode.add(R.color.greenLight);
-        colorCode.add(R.color.notGreen);
-
-        Random randomColor = new Random();
-        int number = randomColor.nextInt(colorCode.size());
-        return colorCode.get(number);
-    }
 
     @Override
     protected void onStart() {
@@ -285,4 +268,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //startActivity(getIntent());
+    }
+
+
 }
