@@ -37,10 +37,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import model.Note;
 
 
@@ -93,21 +89,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 noteBinding.noteCard.setCardBackgroundColor(noteBinding.noteBox.getResources().getColor(note.getColor(),null));
 
 
-                String docId = noteAdapter.getSnapshots().getSnapshot(position).getId();
                 noteBinding.noteBox.setOnClickListener(v -> {
+                    int pos = noteViewHolder.getAdapterPosition();
                     Toast.makeText(v.getContext(), ""+note.getColor(), Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(v.getContext(), NoteDetails.class);
                     intent.putExtra("title",note.getTitle());
                     intent.putExtra("content",note.getContent());
                     intent.putExtra("color",note.getColor());
-                    intent.putExtra("noteId",docId);
+                    intent.putExtra("noteId",noteAdapter.getSnapshots().getSnapshot(pos).getId());
                     v.getContext().startActivity(intent);
                 });
 
                 noteBinding.menuIcon.setOnClickListener(v -> {
 
-                    String popUpSelectedNoteId = noteAdapter.getSnapshots().getSnapshot(position).getId();
+                    int posMenuIcon = noteViewHolder.getAdapterPosition();
                     PopupMenu menu = new PopupMenu(v.getContext(),v);
                     menu.setGravity(Gravity.END);
 
@@ -115,19 +111,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Intent intent = new Intent(v.getContext(), EditNote.class);
                         intent.putExtra("title",note.getTitle());
                         intent.putExtra("content",note.getContent());
-                        intent.putExtra("noteId",popUpSelectedNoteId);
+                        intent.putExtra("noteId",noteAdapter.getSnapshots().getSnapshot(posMenuIcon).getId());
                         startActivity(intent);
                         return false;
                     });
                     menu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
 
-                        DocumentReference documentReference = db.collection("notes").document(user.getUid()).collection("myNotes").document(popUpSelectedNoteId);
+                        DocumentReference documentReference = db.collection("notes").document(user.getUid()).collection("myNotes").document(noteAdapter.getSnapshots().getSnapshot(posMenuIcon).getId());
                         documentReference.delete().addOnSuccessListener(unused -> {
                             //note is successfully delete
                             Toast.makeText(MainActivity.this, "Note deleted.", Toast.LENGTH_SHORT).show();
 
-                            startActivity(getIntent());
-                            overridePendingTransition( 0, 0);
+
 
                         }).addOnFailureListener(e -> {
                             //note is fail to delete
@@ -138,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     });
                     menu.show();
-
                 });
 
 

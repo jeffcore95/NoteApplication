@@ -85,10 +85,11 @@ public class AddNote extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.close){
             Toast.makeText(this, "Note Discard.", Toast.LENGTH_SHORT).show();
-
+            startActivity(new Intent(AddNote.this, MainActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onBackPressed() {
